@@ -22,4 +22,6 @@
     <platform name="ios" />
 <platform name="android" />
 <platform name="winphone" />
+<platform name="window" />
+<platform name="mac" />
   </widget>
