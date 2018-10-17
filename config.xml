@@ -13,8 +13,13 @@
       Star Mission!
   </description>
 
-  <author href="https://assets-cdn.github.com/images/spinners/octocat-spinner-128.gif" email="aipppk1760.ai.ai@gmail.com">
+  <author email="aipppk1760.ai.ai@gmail.com">
       chitsanupong rongpan
   </author>
-
-</widget>
+    <platform>
+        chitsanupong rongpan
+    </platform>
+    <platform name="ios" />
+<platform name="android" />
+<platform name="winphone" />
+  </widget>
