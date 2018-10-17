@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title> Star Mission!</title></head>
+<body>
+<audio loop autoplay="autoplay" src="sounds/bg.ogg"></audio>
+<canvas id="myCanvas" width="480" height="320" left: 0; top: 0;></canvas>
+<script type="text/javascript">
+	var fps =50;		// กำหนดเฟรมเรต
+	var timing=0;
+	var ctxP=document.getElementById('myCanvas').getContext('2d');	//เชื่อมต่อ canvas โดยขอใช้การวาดเป็นแบบ 2 มิติ
+	var imgBg1 = 	new Image();	
+	var imgBg2 = 	new Image();
+	var imgBg3 = 	new Image();
+		imgBg1.src = 'images/bg1.png';	// โหลดฉากหลัง 
+		imgBg2.src = 'images/bg2.png';	// โหลดฉากหลัง 
+		imgBg3.src = 'images/bg3.png';	// โหลดฉากหลัง 
+	var imgRocket = new Image();
+		imgRocket.src = 'images/rocket.png';	// โหลดรูป bg1.png
+	var imgMissile = new Image();	//*สร้างตัวแปรชื่อ imgButton วาดปุ่ม
+		imgMissile.src = 'images/missile.png';	// โหลดรูป missile.png
+	var imgBoss	=	new Image();
+		imgBoss.src = 'images/boss.png';	// โหลดรูป boss.png
+	var imgEnemy = 	new Image();
+		imgEnemy.src = 'images/enemy.png';
+	var imgStatusWin = new Image();
+		imgStatusWin.src = 'images/win.png';
+	var imgStatusLost = new Image();
+		imgStatusLost.src = 'images/lost.png';
+	var enemyPos1 ={x:Math.random()*320, y: 0};
+	var enemyPos2 ={x:Math.random()*320, y:-100};
+	var enemy1 = new drawEnemy(0.01,1,enemyPos1.x,enemyPos1.y,50,50);
+	var enemy2 = new drawEnemy(0.05,2,enemyPos2.x,enemyPos1.y,50,50);
+	var keyframeRocket=1;
+	var keyframeObject=1;
+	var rocketPos ={x:220, y:250};
+	var posBossX=100;
+	var enableMissile=false;
+	var missilePos={x:0, y:0};
+	var normalizing={deltaManitude:0, deltaX:0,deltaY:0};
+	var rocketMove={enableX:false, enableY:false, targetX:0, targetY:0};
+	var audioBoom = new Audio("sounds/shooting.ogg");
+		setInterval(Update,1000/fps);		
+function Update() {
+	document.addEventListener('keydown',checkKeyDown,false); // เรียกใช้ฟังก์ชั่น checkKeydown เมื่อมีการกดปุ่ม
+	window.addEventListener('click',clickReporter,false);
+	// White your Code!!
+	if(timing < 220){timing+=0.2;}
+	drawBg(timing);	
+	drawRocket(keyframeRocket,rocketPos.x,rocketPos.y);
+	drawBoss(posBossX,0);
+	drawText(Math.round(timing),10,30);
+	if (enemyPos1.y<320){
+		enemyPos1.y++;
+		enemy1.setY(enemyPos1.y);
+		enemy1.draw();
+	}else{
+		enemyPos1 ={x:Math.random()*320, y: -50};
+		enemy1.setY(enemyPos1.y);
+		enemy1.setX(enemyPos1.x);
+	}
+	if (enemyPos2.y<320){
+		enemyPos2.y++;
+		enemy2.setY(enemyPos2.y);
+		enemy2.draw();
+	}else{
+		enemyPos2 ={x:Math.random()*320, y: -50};
+		enemy2.setY(enemyPos2.y);
+		enemy2.setX(enemyPos2.x);
+	}
+	if (rocketMove.targetX!=rocketPos.x && rocketMove.enableX ==true){
+    	rocketPos.x+=normalizing.deltaX/normalizing.deltaManitude*2;
+    }
+	if (rocketMove.targetY!=rocketPos.y && rocketMove.enableY ==true){
+    	rocketPos.y+=normalizing.deltaY/normalizing.deltaManitude*2;
+    }
+	if (Math.abs(rocketMove.targetX-rocketPos.x)<=1){rocketMove.enableX=false;keyframeRocket=1;}
+	if (Math.abs(rocketMove.targetY-rocketPos.y)<=1){rocketMove.enableY=false;}
+	collisionBoss_and_Missile=collision(missilePos.x,missilePos.y,25,25,posBossX,0,150,90);
+	collisionEnemy1_and_Rocket=collision(rocketPos.x,rocketPos.y,50,50,enemyPos1.x,enemyPos1.y,40,40);
+	collisionEnemy2_and_Rocket=collision(rocketPos.x,rocketPos.y,50,50,enemyPos2.x,enemyPos2.y,40,40);
+	if (collisionBoss_and_Missile==true){drawStatus(true);}
+	if (collisionEnemy1_and_Rocket || collisionEnemy2_and_Rocket ==true){drawStatus(false);}
+	if (posBossX>rocketPos.x){posBossX=posBossX-0.5;}else{posBossX=posBossX+0.5;}
+	if (enableMissile==true){
+		drawMissile(keyframeObject,missilePos.x,missilePos.y);
+		--missilePos.y;
+		if (keyframeObject==1){keyframeObject=2;}else{keyframeObject=1;}
+	}
+}
+
+// collistion.js
+function collision(posX1,posY1,width1,height1,posX2,posY2,width2,height2){
+  if (posX1<=posX2+width2 && posX2<=posX1+width1 && posY1<=posY2+height2 && posY2<=posY1+height1){
+		  return true;
+	  }else{
+		  return false;
+	  }		
+}
+
+// drawtext.js
+function drawText(txt,posX,posY){
+	  ctxP.fillStyle = "white";
+	  ctxP.font="20px Comic Sans MS";
+	  ctxP.fillText("Score :"+txt,posX,posY);	
+}
+// End drawtext.js
+
+// drawboject.js
+function drawBg(timing) {
+	ctxP.drawImage(imgBg1,0,320-timing/2,480,320,0,0,480,320);
+	ctxP.drawImage(imgBg2,0,320-timing,480,320,0,0,480,320);
+	ctxP.drawImage(imgBg3,0,320-timing*1.5,480,320,0,0,480,320);
+}
+function drawStatus(status) {
+	if (status==true){
+		ctxP.drawImage(imgStatusWin,0,0);
+	}else{
+		ctxP.drawImage(imgStatusLost,0,0);
+	}
+	
+}
+function drawRocket(keyframe,posX,posY){		//
+	ctxP.drawImage(imgRocket,((keyframe-1)*100),0,100,100,posX,posY,50,50);	
+}
+function drawMissile(keyframe,posX,posY){		//
+	ctxP.drawImage(imgMissile,((keyframe-1)*25),0,25,25,posX,posY,25,25);	
+}
+function drawBoss(posX,posY){		//
+	ctxP.drawImage(imgBoss,posX,posY);	
+}	
+// End drawboject.js
+
+// keylistener.js
+function checkKeyDown(e){
+	var key = e.keyCode;
+	if(key == 88){
+		enableMissile=true;
+		audioBoom.play();
+		missilePos.x=rocketPos.x;
+		missilePos.y=rocketPos.y;
+	}
+	if (key==81 || key==27){	// กดปุ่ม q หรือ Esc ออกจากเกม
+		alert("Exit Game!");
+		window.location="index.html";
+	}
+}
+function clickReporter(e) {
+	  normalizing.deltaX =e.pageX-rocketPos.x;
+	  normalizing.deltaY =e.pageY-rocketPos.y;
+	  normalizing.deltaManitude = Math.sqrt(Math.pow(normalizing.deltaX,2)+Math.pow(normalizing.deltaY,2));
+	  rocketMove.targetX=e.pageX;
+	  rocketMove.targetY=e.pageY;
+	  rocketMove.enableX =true;
+	  rocketMove.enableY =true;
+	  if (normalizing.deltaX>=0){keyframeRocket=3}else{keyframeRocket=2}
+}
+// End keylistener.js
+
+// drawobjectByprototype.js
+function drawEnemy(delay,row,posX,posY,desWidth,desHeight){
+	this.delay =delay;
+	this.count =0;
+	this.enable = true;
+	this.keyframe = 1;
+	this.row = row;
+	this.posX=posX;    //positionX element
+	this.posY=posY;	   //positionY element
+	this.desWidth = desWidth;
+	this.desHeight = desHeight;
+	drawEnemy.prototype.setX=function(posX){     //method setX
+		this.posX=posX;
+	   }
+	drawEnemy.prototype.setY=function(posY){     //method setY
+		this.posY=posY;
+	   }
+	drawEnemy.prototype.setsrcX=function(srcX){  //method setsrcX
+		this.srcX=srcX;
+	   }
+	drawEnemy.prototype.draw=function(){	     //method drawPlane
+		this.count+=this.delay;
+		if (this.count>=1){
+			if (this.keyframe==1){this.keyframe=2}else{this.keyframe=1;}
+			if (this.count>=1){this.count=0;}
+		}
+		ctxP.drawImage(imgEnemy,(this.keyframe-1)*50,(this.row-1)*50,50,50,this.posX,this.posY,this.desWidth,this.desHeight);
+	}
+}
+// End drawobjectByprototype.js
+</script>
+</body>
+</html>
