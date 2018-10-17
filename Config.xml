@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget xmlns   = "http://www.w3.org/ns/widgets"
+    xmlns:gap   = "http://phonegap.com/ns/1.0"
+    id          = "com.pppk1760.Star Mission!"
+    versionCode = "1.0.0"
+    version     = "1.0.0" >
+
+<!-- versionCode is optional and Android only -->
+
+  <name>Star Mission!</name>
+
+  <description>
+      Star Mission!
+  </description>
+
+  <author href="https://assets-cdn.github.com/images/spinners/octocat-spinner-128.gif" email="aipppk1760.ai.ai@gmail.com">
+      chitsanupong rongpan
+  </author>
+
+</widget>
