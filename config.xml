@@ -24,4 +24,5 @@
 <platform name="winphone" />
 <platform name="window" />
 <platform name="mac" />
+<platform name="hp" />
   </widget>
